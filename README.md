@@ -18,13 +18,13 @@ The problem this solves
 
 When something goes wrong with a model, teams are asked questions like:
 
-“Was the model already unstable before the incident?”
+Was the model already unstable before the incident?
 
-“Did internal risk increase before failures were visible?”
+Did internal risk increase before failures were visible?
 
-“Why were certain decisions automatically rejected?”
+Why were certain decisions automatically rejected?
 
-“What changed between model version A and B?”
+What changed between model version A and B?
 
 Most teams respond with:
 
@@ -73,15 +73,15 @@ How teams use this for audit & incident response
 
 Typical workflow:
 
-A model runs in production.
+A model runs in production
 
-CDI, decision rates, and drift signals are collected.
+CDI, decision rates, and drift signals are collected
 
-An incident occurs (or an audit is requested).
+An incident occurs (or an audit is requested)
 
-A Time-Bounded Model Risk Evidence Report is generated.
+A Time-Bounded Model Risk Evidence Report is generated
 
-That report is shared with:
+The report is shared with:
 
 risk & compliance
 
@@ -109,11 +109,15 @@ version, hash, deployment environment
 
 Policy in effect
 
-calibrated thresholds, expected reject rates
+calibrated thresholds
+
+expected reject rates
 
 Time window
 
-exact start/end, number of predictions
+exact start/end
+
+number of predictions
 
 Risk summary
 
@@ -170,12 +174,16 @@ downstream of model deployment
 It does not require retraining or labels.
 
 Installation
-pip install cdi-guardrail
+From source (recommended for evaluation and pilots)
+git clone https://github.com/Pranav-Kumar-001/cdi-guardrail.git
+cd cdi-guardrail
+pip install -e .
 
+Optional dependencies
 
-Optional extras:
+For Prometheus metrics export:
 
-pip install cdi-guardrail[prometheus]
+pip install -e ".[prometheus]"
 
 Minimal usage example
 
@@ -197,7 +205,13 @@ Commercial note
 
 This library is used to generate formal model risk evidence reports.
 
-Teams typically engage us when they need a report they can hand to audit, legal, or regulators.
+Teams typically engage when they need an artifact they can hand to:
+
+audit
+
+legal
+
+regulators
 
 Organizations most often seek support for:
 
