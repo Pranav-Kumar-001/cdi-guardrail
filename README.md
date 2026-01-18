@@ -1,180 +1,155 @@
-CDI Guardrail
+# CDI Guardrail
 
-Defensible Risk Evidence for Deployed ML Models
+**Defensible Risk Evidence for Deployed ML Models**
 
-What this is
+---
 
-CDI Guardrail is a lightweight library for generating defensible evidence about how a machine-learning model behaved over a specific time window.
+## What this is
 
-It does not try to improve accuracy.
-It does not explain predictions.
-It does not replace monitoring dashboards.
+CDI Guardrail is a lightweight library for generating **defensible evidence** about how a machine-learning model behaved over a specific time window.
+
+It does **not** try to improve accuracy.  
+It does **not** explain predictions.  
+It does **not** replace monitoring dashboards.
 
 It exists to answer one hard question:
 
-“Can you prove how your model was behaving when it mattered?”
+> **“Can you prove how your model was behaving when it mattered?”**
 
-The problem this solves
+---
+
+## The problem this solves
 
 When something goes wrong with a model, teams are asked questions like:
 
-Was the model already unstable before the incident?
-
-Did internal risk increase before failures were visible?
-
-Why were certain decisions automatically rejected?
-
-What changed between model version A and B?
+- Was the model already unstable before the incident?
+- Did internal risk increase before failures were visible?
+- Why were certain decisions automatically rejected?
+- What changed between model version A and B?
 
 Most teams respond with:
 
-accuracy metrics (insufficient)
+- accuracy metrics (insufficient)
+- logs (not interpretable)
+- dashboards (not frozen in time)
 
-logs (not interpretable)
+These are **not defensible evidence**.
 
-dashboards (not frozen in time)
+CDI Guardrail generates **time-bounded risk evidence** that survives:
 
-These are not defensible evidence.
+- audits  
+- post-mortems  
+- compliance reviews  
+- leadership scrutiny  
 
-CDI Guardrail generates time-bounded risk evidence that survives:
+---
 
-audits
-
-post-mortems
-
-compliance reviews
-
-leadership scrutiny
-
-Core idea (plain English)
+## Core idea (plain English)
 
 Every model experiences internal strain when making decisions.
 
 CDI (Consistency Deviation Index) measures:
 
-how internally consistent the model was
+- how internally consistent the model was
+- how much internal pressure it experienced
+- whether that pressure stayed within calibrated bounds
 
-how much internal pressure it experienced
-
-whether that pressure stayed within calibrated bounds
-
-This is done without requiring labels and without knowing outcomes.
+This is done **without requiring labels** and **without knowing outcomes**.
 
 That makes CDI suitable for:
 
-live systems
+- live systems
+- delayed feedback
+- regulated environments
 
-delayed feedback
+---
 
-regulated environments
-
-The paid use case (important)
-How teams use this for audit & incident response
+## The paid use case (important)  
+### How teams use this for audit & incident response
 
 Typical workflow:
 
-A model runs in production
-
-CDI, decision rates, and drift signals are collected
-
-An incident occurs (or an audit is requested)
-
-A Time-Bounded Model Risk Evidence Report is generated
+1. A model runs in production  
+2. CDI, decision rates, and drift signals are collected  
+3. An incident occurs (or an audit is requested)  
+4. A **Time-Bounded Model Risk Evidence Report** is generated  
 
 The report is shared with:
 
-risk & compliance
-
-engineering leadership
-
-auditors / regulators
+- risk & compliance
+- engineering leadership
+- auditors / regulators
 
 The report answers:
 
-What did the model’s internal risk look like?
+- What did the model’s internal risk look like?
+- Did it drift from its baseline?
+- Were automated decisions justified under policy?
 
-Did it drift from its baseline?
+This shifts conversations from **opinions to evidence**.
 
-Were automated decisions justified under policy?
+---
 
-This shifts conversations from opinions to evidence.
-
-What the evidence report contains
+## What the evidence report contains
 
 A single report includes:
 
-Model identity
+- **Model identity**
+  - version, hash, deployment environment
+- **Policy in effect**
+  - calibrated thresholds
+  - expected reject rates
+- **Time window**
+  - exact start/end
+  - number of predictions
+- **Risk summary**
+  - mean / p95 / p99 CDI
+  - reject and warn rates
+- **Drift analysis**
+  - KS test
+  - PSI
+  - interpretation
+- **Policy justification**
+  - why thresholds exist
+  - what behavior was expected
+- **Machine-readable appendix**
+  - JSON snapshot for archival or audit ingestion
 
-version, hash, deployment environment
+The report is **frozen in time** and can be archived or signed.
 
-Policy in effect
+---
 
-calibrated thresholds
+## What this is NOT
 
-expected reject rates
+To avoid misuse, CDI Guardrail explicitly does **not**:
 
-Time window
+- measure model correctness
+- assess fairness or bias
+- explain individual predictions
+- replace monitoring dashboards
+- provide a hosted SaaS
 
-exact start/end
+It measures **internal consistency under a fixed policy**.
 
-number of predictions
+---
 
-Risk summary
-
-mean / p95 / p99 CDI
-
-reject and warn rates
-
-Drift analysis
-
-KS test
-
-PSI
-
-interpretation
-
-Policy justification
-
-why thresholds exist
-
-what behavior was expected
-
-Machine-readable appendix
-
-JSON snapshot for archival or audit ingestion
-
-The report is frozen in time and can be archived or signed.
-
-What this is NOT
-
-To avoid misuse, CDI Guardrail explicitly does not:
-
-measure model correctness
-
-assess fairness or bias
-
-explain individual predictions
-
-replace monitoring dashboards
-
-provide a hosted SaaS
-
-It measures internal consistency under a fixed policy.
-
-Where this fits in production
+## Where this fits in production
 
 CDI Guardrail typically sits:
 
-alongside inference code
+- alongside inference code
+- inside ML platform infrastructure
+- downstream of model deployment
 
-inside ML platform infrastructure
+It does **not** require retraining or labels.
 
-downstream of model deployment
+---
 
-It does not require retraining or labels.
+## Installation
 
-Installation
-From source (recommended for evaluation and pilots)
+### From source (recommended for evaluation and pilots)
+
+```bash
 git clone https://github.com/Pranav-Kumar-001/cdi-guardrail.git
 cd cdi-guardrail
 pip install -e .
@@ -200,6 +175,26 @@ monitor.update(cdi)
 
 
 That’s enough to begin collecting evidence.
+
+Epistemic Integrity (Design Note)
+
+CDI Guardrail focuses on generating defensible evidence about how a model behaved over a defined time window.
+
+A related but distinct question is when belief escalation itself is justified, especially in the presence of:
+
+self-referential model claims,
+
+repeated or stylistically varied signals,
+
+correlated internal or external evidence.
+
+To address this epistemic layer, a separate project — Sentinel — implements a normative belief gate that governs when belief may be escalated under correlated versus independent evidence.
+
+Sentinel is model- and policy-agnostic and is designed to be robust against evidence inflation (e.g. echo chambers, repetition, fake probes).
+
+Design note: notes/epistemic_integrity.md
+
+Sentinel repository: https://github.com/Pranav-Kumar-001/sentinel-epistemic-auditor
 
 Commercial note
 
