@@ -6,7 +6,7 @@
 
 ## What this is
 
-CDI Guardrail is a lightweight library for generating **defensible evidence** about how a machine-learning model behaved over a specific time window.
+CDI Guardrail is a lightweight library for generating defensible evidence about how a machine-learning model behaved over a specific time window.
 
 It does **not** try to improve accuracy.  
 It does **not** explain predictions.  
@@ -37,10 +37,10 @@ These are **not defensible evidence**.
 
 CDI Guardrail generates **time-bounded risk evidence** that survives:
 
-- audits  
-- post-mortems  
-- compliance reviews  
-- leadership scrutiny  
+- audits
+- post-mortems
+- compliance reviews
+- leadership scrutiny
 
 ---
 
@@ -48,7 +48,7 @@ CDI Guardrail generates **time-bounded risk evidence** that survives:
 
 Every model experiences internal strain when making decisions.
 
-CDI (Consistency Deviation Index) measures:
+**CDI (Consistency Deviation Index)** measures:
 
 - how internally consistent the model was
 - how much internal pressure it experienced
@@ -64,21 +64,20 @@ That makes CDI suitable for:
 
 ---
 
-## The paid use case (important)  
+## The paid use case (important)
+
 ### How teams use this for audit & incident response
 
-Typical workflow:
+**Typical workflow:**
 
-1. A model runs in production  
-2. CDI, decision rates, and drift signals are collected  
-3. An incident occurs (or an audit is requested)  
-4. A **Time-Bounded Model Risk Evidence Report** is generated  
-
-The report is shared with:
-
-- risk & compliance
-- engineering leadership
-- auditors / regulators
+1. A model runs in production
+2. CDI, decision rates, and drift signals are collected
+3. An incident occurs (or an audit is requested)
+4. A **Time-Bounded Model Risk Evidence Report** is generated
+5. The report is shared with:
+   - risk & compliance
+   - engineering leadership
+   - auditors / regulators
 
 The report answers:
 
@@ -86,7 +85,7 @@ The report answers:
 - Did it drift from its baseline?
 - Were automated decisions justified under policy?
 
-This shifts conversations from **opinions to evidence**.
+This shifts conversations from **opinions** to **evidence**.
 
 ---
 
@@ -94,26 +93,34 @@ This shifts conversations from **opinions to evidence**.
 
 A single report includes:
 
-- **Model identity**
-  - version, hash, deployment environment
-- **Policy in effect**
-  - calibrated thresholds
-  - expected reject rates
-- **Time window**
-  - exact start/end
-  - number of predictions
-- **Risk summary**
-  - mean / p95 / p99 CDI
-  - reject and warn rates
-- **Drift analysis**
-  - KS test
-  - PSI
-  - interpretation
-- **Policy justification**
-  - why thresholds exist
-  - what behavior was expected
-- **Machine-readable appendix**
-  - JSON snapshot for archival or audit ingestion
+### Model identity
+- version
+- hash
+- deployment environment
+
+### Policy in effect
+- calibrated thresholds
+- expected reject rates
+
+### Time window
+- exact start/end
+- number of predictions
+
+### Risk summary
+- mean / p95 / p99 CDI
+- reject and warn rates
+
+### Drift analysis
+- KS test
+- PSI
+- interpretation
+
+### Policy justification
+- why thresholds exist
+- what behavior was expected
+
+### Machine-readable appendix
+- JSON snapshot for archival or audit ingestion
 
 The report is **frozen in time** and can be archived or signed.
 
@@ -155,12 +162,9 @@ cd cdi-guardrail
 pip install -e .
 
 Optional dependencies
-
-For Prometheus metrics export:
-
 pip install -e ".[prometheus]"
 
-Minimal usage example
+Minimal usage example (Level-1: Standard)
 
 A lightweight monitor aggregates CDI statistics over time.
 
@@ -170,11 +174,101 @@ guard = CDIGuard(model, fast=True)
 monitor = CDIMonitor()
 
 # Labels are optional and may be unavailable in production
-pred, cdi, decision = guard.forward_with_cdi(x)
+pred, cdi, decision = guard.forward_with_cdi(x, y)
 monitor.update(cdi)
 
 
-That’s enough to begin collecting evidence.
+That’s enough to begin collecting defensible risk evidence.
+
+⚠️ Advanced (Beta): Level-2 Audit Mode
+
+Status: Advanced / Beta
+Audience: Audit, risk, and platform engineers
+Not required for standard usage
+
+CDI Guardrail also provides an opt-in forensic audit path for advanced users who need to answer:
+
+“Why did the risk signal spike?”
+
+What Level-2 adds (and what it does not)
+Adds
+
+Decomposed boundary evidence
+
+Local prediction stability analysis
+
+Forensic inspection for audits and post-mortems
+
+Does NOT
+
+Change CDI scoring
+
+Affect forward_with_cdi
+
+Add overhead to the production path
+
+Replace the scalar CDI signal
+
+Level-1 remains the production risk signal.
+Level-2 exists purely for inspection and evidence.
+
+Boundary decomposition
+
+In Level-2, boundary violations are decomposed into:
+
+Calibration
+
+Expected Calibration Error (ECE)
+
+Stability
+
+Sensitivity of output probabilities under bounded input perturbations
+
+The stability boundary has an explicit sensitivity test and is verified to increase under controlled input perturbations.
+
+Example: forensic inspection
+from cdi_guardrail import CDIGuard
+
+guard = CDIGuard(model, fast=True)
+
+audit = guard.forward_detailed(x, y)
+
+print(audit["prediction"])
+print(audit["boundary_vector"])
+print(audit["boundary_scalar"])
+
+Example output (illustrative)
+boundary_vector = {
+  "calibration": 0.16,
+  "stability":   0.001
+}
+
+
+Interpretation:
+
+The model’s risk at this point was driven primarily by miscalibration, not local instability.
+
+This kind of decomposition is useful for:
+
+audit reports
+
+incident reviews
+
+regulator questions
+
+internal root-cause analysis
+
+Important guarantees
+
+Level-2 is opt-in
+
+Level-2 is read-only
+
+Level-2 uses no gradients
+
+Level-2 does not affect policy decisions
+
+Level-2 may evolve (Beta)
 
 Epistemic Integrity (Design Note)
 
@@ -182,11 +276,11 @@ CDI Guardrail focuses on generating defensible evidence about how a model behave
 
 A related but distinct question is when belief escalation itself is justified, especially in the presence of:
 
-self-referential model claims,
+self-referential model claims
 
-repeated or stylistically varied signals,
+repeated or stylistically varied signals
 
-correlated internal or external evidence.
+correlated internal or external evidence
 
 To address this epistemic layer, a separate project — Sentinel — implements a normative belief gate that governs when belief may be escalated under correlated versus independent evidence.
 
@@ -194,7 +288,8 @@ Sentinel is model- and policy-agnostic and is designed to be robust against evid
 
 Design note: notes/epistemic_integrity.md
 
-Sentinel repository: https://github.com/Pranav-Kumar-001/sentinel-epistemic-auditor
+Sentinel repository:
+https://github.com/Pranav-Kumar-001/sentinel-epistemic-auditor
 
 Commercial note
 
@@ -220,13 +315,15 @@ audit or incident response
 
 Status
 
-Core signal: stable
+Core CDI signal: stable
 
 Fast inference path: validated
 
 Monitoring & drift detection: tested
 
 Prometheus integration: optional
+
+Level-2 audit mode: advanced / beta
 
 Report generation: defined, not automated
 
