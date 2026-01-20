@@ -17,6 +17,7 @@ The repository provides, at no cost:
 
 - The CDI methodology and implementation
 - Fast and full CDI computation paths
+- **Advanced audit primitives (Level-2 audit mode), marked experimental/beta**
 - Calibration logic
 - Monitoring and drift detection
 - Logging and Prometheus integration
@@ -42,6 +43,9 @@ We do **not** sell:
 - “enterprise features” hidden behind a paywall
 
 If you only need software, the open-source project is sufficient.
+
+We also do **not** sell early or exclusive access to advanced audit features;  
+experimental capabilities are developed in the open and clearly marked.
 
 ---
 
@@ -144,4 +148,7 @@ that is where engagement makes sense.
 ### Status
 
 This document describes intent, not obligation.  
+Some advanced audit features may be marked experimental or beta  
+while remaining fully open source.
+
 Using the open-source library does not require any commercial relationship.
